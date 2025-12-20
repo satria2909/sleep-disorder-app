@@ -209,10 +209,60 @@ elif menu == "📊 Hasil Prediksi":
 # ==============================
 elif menu == "🕓 Riwayat Prediksi":
     st.title("🕓 Riwayat Prediksi")
+
     if len(st.session_state.riwayat) == 0:
         st.write("Belum ada data.")
     else:
-        st.dataframe(pd.DataFrame(st.session_state.riwayat))
+        df_riwayat = pd.DataFrame(st.session_state.riwayat)
+        st.dataframe(df_riwayat)
+
+        st.markdown("### 📤 Ekspor Data")
+
+        # ==============================
+        # 📄 Export CSV
+        # ==============================
+        csv = df_riwayat.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            label="⬇️ Unduh CSV",
+            data=csv,
+            file_name="riwayat_prediksi_tidur.csv",
+            mime="text/csv"
+        )
+
+        # ==============================
+        # 📄 Export PDF
+        # ==============================
+        from fpdf import FPDF
+
+        def generate_pdf(dataframe):
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=10)
+
+            pdf.cell(0, 10, "Riwayat Prediksi Gangguan Tidur", ln=True, align="C")
+            pdf.ln(5)
+
+            # Header
+            for col in dataframe.columns:
+                pdf.cell(40, 8, col, border=1)
+            pdf.ln()
+
+            # Data
+            for _, row in dataframe.iterrows():
+                for item in row:
+                    pdf.cell(40, 8, str(item), border=1)
+                pdf.ln()
+
+            return pdf.output(dest="S").encode("latin-1")
+
+        pdf_data = generate_pdf(df_riwayat)
+
+        st.download_button(
+            label="⬇️ Unduh PDF",
+            data=pdf_data,
+            file_name="riwayat_prediksi_tidur.pdf",
+            mime="application/pdf"
+        )
 
 # ==============================
 # 9️⃣ Tips Tidur
