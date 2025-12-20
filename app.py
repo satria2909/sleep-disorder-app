@@ -151,7 +151,7 @@ elif menu == "🧮 Prediksi Tidur":
                 for k, v in prob_display.items()
             }
 
-           st.session_state.last_pred = {
+            st.session_state.last_pred = {
                 "BMI": bmi,
                 "Kategori BMI": kategori_bmi,
                 "Hasil": hasil,
