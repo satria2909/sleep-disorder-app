@@ -2,20 +2,68 @@ import streamlit as st
 import pandas as pd
 import joblib
 import numpy as np
+import sqlite3
+import uuid
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+from fpdf import FPDF
 
 # ==============================
-# 1️⃣ Load Model Bundle
+# 1️⃣ SESSION ID (USER TEMPORARY)
+# ==============================
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+
+# ==============================
+# 2️⃣ DATABASE (SQLITE)
+# ==============================
+def get_conn():
+    return sqlite3.connect("riwayat_temp.db", check_same_thread=False)
+
+def init_db():
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS riwayat (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT,
+            nama TEXT,
+            usia INTEGER,
+            bmi REAL,
+            kategori_bmi TEXT,
+            hasil TEXT,
+            prob_normal REAL,
+            prob_insomnia REAL,
+            prob_apnea REAL,
+            last_active TIMESTAMP
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def cleanup_old_data():
+    conn = get_conn()
+    c = conn.cursor()
+    batas = datetime.now() - timedelta(minutes=10)
+    c.execute("DELETE FROM riwayat WHERE last_active < ?", (batas,))
+    conn.commit()
+    conn.close()
+
+init_db()
+cleanup_old_data()
+
+# ==============================
+# 3️⃣ LOAD MODEL
 # ==============================
 bundle = joblib.load("best_sleep_disorder_model.pkl")
-
 model = bundle["model"]
 scaler = bundle["scaler"]
-feature_columns = bundle["feature_columns"]   # 9 fitur
+feature_columns = bundle["feature_columns"]
 label_encoder = bundle["label_encoder"]
 label_classes = label_encoder.classes_
 
 # ==============================
-# 2️⃣ Konfigurasi Halaman
+# 4️⃣ PAGE CONFIG
 # ==============================
 st.set_page_config(
     page_title="Deteksi Gangguan Tidur",
@@ -24,11 +72,10 @@ st.set_page_config(
 )
 
 # ==============================
-# 3️⃣ Fungsi Bantu
+# 5️⃣ FUNGSI BANTU
 # ==============================
-def hitung_bmi(tinggi_cm, berat_kg):
-    tinggi_m = tinggi_cm / 100
-    return berat_kg / (tinggi_m ** 2)
+def hitung_bmi(tb, bb):
+    return bb / ((tb / 100) ** 2)
 
 def kategori_bmi_text(bmi):
     if bmi < 25:
@@ -40,199 +87,166 @@ def kategori_bmi_text(bmi):
 
 def keterangan_tidur(label):
     if label == "Normal":
-        return "Tidur Anda tergolong normal. Pertahankan pola hidup sehat."
+        return "Tidur Anda tergolong normal."
     elif label == "Insomnia":
-        return "Terdapat indikasi insomnia. Perhatikan durasi tidur, stres, dan kualitas tidur."
+        return "Terdapat indikasi insomnia."
     elif label == "Sleep Apnea":
-        return "Terdapat indikasi sleep apnea. Disarankan konsultasi medis."
+        return "Terdapat indikasi sleep apnea."
     else:
-        return "Hasil berada pada kondisi lain. Perlu observasi lanjutan."
+        return "Perlu observasi lanjutan."
 
 # ==============================
-# 4️⃣ Sidebar Navigasi
+# 6️⃣ SIDEBAR
 # ==============================
 menu = st.sidebar.radio(
     "Navigasi",
-    [
-        "🏠 Beranda",
-        "🧮 Prediksi Tidur",
-        "📊 Hasil Prediksi",
-        "🕓 Riwayat Prediksi",
-        "💤 Tips Tidur Sehat",
-        "ℹ️ Tentang"
-    ]
+    ["🏠 Beranda", "🧮 Prediksi Tidur", "📊 Hasil Prediksi",
+     "🕓 Riwayat Prediksi", "💤 Tips Tidur Sehat", "ℹ️ Tentang"]
 )
 
-if "riwayat" not in st.session_state:
-    st.session_state.riwayat = []
-
 # ==============================
-# 5️⃣ Beranda
+# 7️⃣ BERANDA
 # ==============================
 if menu == "🏠 Beranda":
     st.title("😴 Sistem Deteksi Gangguan Tidur")
-    st.write("Aplikasi deteksi gangguan tidur berbasis **Support Vector Machine (SVM)**.")
-    st.info("Gunakan menu di kiri untuk melakukan prediksi.")
-    st.image(
-        "sleep.png",
-        caption="Sistem Deteksi Gangguan Tidur Berbasis SVM",
-        use_container_width=True
-    )
+    st.write("Berbasis **Support Vector Machine (SVM)**")
 
 # ==============================
-# 6️⃣ Form Prediksi
+# 8️⃣ FORM PREDIKSI
 # ==============================
 elif menu == "🧮 Prediksi Tidur":
-    st.title("Formulir Prediksi Tidur")
+    st.title("Form Prediksi")
 
-    nama = st.text_input("Nama Lengkap")
-    umur = st.number_input("Usia (tahun)", 1, 100, 30)
+    nama = st.text_input("Nama")
+    umur = st.number_input("Usia", 1, 100, 30)
+    tinggi = st.number_input("Tinggi (cm)", 140, 220, 170)
+    berat = st.number_input("Berat (kg)", 40, 200, 65)
 
-    tinggi = st.number_input("Tinggi Badan (cm)", 140, 220, 170)
-    berat = st.number_input("Berat Badan (kg)", 40, 200, 65)
+    durasi_tidur = st.number_input("Durasi Tidur (jam)", 0.0, 24.0, 6.0)
+    kualitas_tidur = st.slider("Kualitas Tidur", 1, 10, 5)
+    aktivitas = st.slider("Aktivitas Fisik", 1, 100, 40)
+    stres = st.slider("Tingkat Stres", 1, 10, 7)
+    heart_rate = st.number_input("Detak Jantung", 40, 180, 72)
+    steps = st.number_input("Langkah Harian", 0, 50000, 5000)
+    sys = st.number_input("Sistolik", 80, 200, 120)
+    dia = st.number_input("Diastolik", 40, 130, 80)
 
-    bmi = hitung_bmi(tinggi, berat)
-    kategori_bmi = kategori_bmi_text(bmi)
-    st.write(f"**BMI:** {bmi:.2f} — *{kategori_bmi}*")
+    if st.button("Prediksi"):
+        bmi = hitung_bmi(tinggi, berat)
+        kategori_bmi = kategori_bmi_text(bmi)
 
-    durasi_tidur = st.number_input("Durasi Tidur (jam/hari)", 0.0, 24.0, 6.0)
-    kualitas_tidur = st.slider("Kualitas Tidur (1–10)", 1, 10, 5)
-    aktivitas_fisik = st.slider("Aktivitas Fisik (1–100)", 1, 100, 40)
-    tingkat_stres = st.slider("Tingkat Stres (1–10)", 1, 10, 7)
-    heart_rate = st.number_input("Detak Jantung (bpm)", 40, 180, 72)
-    daily_steps = st.number_input("Langkah Harian", 0, 50000, 5000)
+        X = pd.DataFrame([[umur, durasi_tidur, kualitas_tidur, aktivitas,
+                           stres, heart_rate, steps, sys, dia]],
+                         columns=feature_columns)
 
-    systolic = st.number_input("Tekanan Darah Sistolik", 80, 200, 120)
-    diastolic = st.number_input("Tekanan Darah Diastolik", 40, 130, 80)
+        prob = model.predict_proba(scaler.transform(X))[0]
+        probs = dict(zip(label_classes, prob))
 
-    if st.button("Prediksi Sekarang"):
-        if nama.strip() == "":
-            st.warning("Nama wajib diisi.")
-        else:
-            # ==============================
-            # INPUT MODEL (9 FITUR)
-            # ==============================
-            X_input = pd.DataFrame([[
-                umur,
-                durasi_tidur,
-                kualitas_tidur,
-                aktivitas_fisik,
-                tingkat_stres,
-                heart_rate,
-                daily_steps,
-                systolic,
-                diastolic
-            ]], columns=feature_columns)
+        prob_display = {}
+        for k, v in probs.items():
+            if pd.isna(k):
+                prob_display["Normal"] = v
+            else:
+                prob_display[k] = v
 
-            X_scaled = scaler.transform(X_input)
-            prob = model.predict_proba(X_scaled)[0]
+        hasil = max(prob_display, key=prob_display.get)
 
-            # ==============================
-            # 🔥 MAPPING LABEL (NaN → Normal)
-            # ==============================
-            probs = dict(zip(label_classes, prob))
+        conn = get_conn()
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO riwayat
+            (session_id, nama, usia, bmi, kategori_bmi, hasil,
+             prob_normal, prob_insomnia, prob_apnea, last_active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            st.session_state.session_id,
+            nama, umur, bmi, kategori_bmi, hasil,
+            prob_display.get("Normal", 0)*100,
+            prob_display.get("Insomnia", 0)*100,
+            prob_display.get("Sleep Apnea", 0)*100,
+            datetime.now()
+        ))
+        conn.commit()
+        conn.close()
 
-            prob_display = {}
-            for k, v in probs.items():
-                if pd.isna(k):
-                    prob_display["Normal"] = v
-                else:
-                    prob_display[k] = v
-
-            # ==============================
-            # 🔥 PREDIKSI FINAL (ARGMAX)
-            # ==============================
-            hasil = max(prob_display, key=prob_display.get)
-
-            prob_dict = {
-                k: round(v * 100, 2)
-                for k, v in prob_display.items()
-            }
-
-            st.session_state.last_pred = {
-                "BMI": bmi,
-                "Kategori BMI": kategori_bmi,
-                "Hasil": hasil,
-                "Probabilitas": prob_dict
-            }
-
-            st.session_state.riwayat.append({
-                "Nama": nama,
-                "Usia": umur,
-                "BMI": round(bmi, 2),
-                "Kategori BMI": kategori_bmi,
-                "Hasil": hasil
-            })
-
-            st.success("Prediksi berhasil. Lihat menu **Hasil Prediksi**.")
+        st.success("Prediksi berhasil")
 
 # ==============================
-# 7️⃣ Hasil Prediksi
+# 9️⃣ HASIL PREDIKSI TERAKHIR
 # ==============================
 elif menu == "📊 Hasil Prediksi":
-    st.title("📊 Hasil Prediksi")
-    if "last_pred" not in st.session_state:
-        st.warning("Belum ada prediksi.")
+    conn = get_conn()
+    df = pd.read_sql("""
+        SELECT * FROM riwayat
+        WHERE session_id = ?
+        ORDER BY last_active DESC LIMIT 1
+    """, conn, params=(st.session_state.session_id,))
+    conn.close()
+
+    if df.empty:
+        st.warning("Belum ada prediksi")
     else:
-        data = st.session_state.last_pred
-
-        st.subheader(f"Hasil: **{data['Hasil']}**")
-        st.write(f"**BMI:** {data['BMI']:.2f} — *{data['Kategori BMI']}*")
-        #st.write("**Probabilitas:**")
-        #st.json(data["Probabilitas"])
-        st.info(keterangan_tidur(data["Hasil"]))
-
-        # ==============================
-        # 🎨 UI Tambahan
-        # ==============================
-
-        st.markdown("### Tingkat Probabilitas")
-        for label, value in data["Probabilitas"].items():
-            st.write(f"{label}: {value}%")
-            st.progress(value / 100)
-
-        import matplotlib.pyplot as plt
-
-        labels = list(data["Probabilitas"].keys())
-        values = list(data["Probabilitas"].values())
-
-        fig, ax = plt.subplots()
-        ax.bar(labels, values)
-        ax.set_ylim(0, 100)
-        ax.set_ylabel("Probabilitas (%)")
-        ax.set_title("Distribusi Probabilitas Prediksi")
-
-        st.pyplot(fig)
+        row = df.iloc[0]
+        st.subheader(f"Hasil: {row['hasil']}")
+        st.info(keterangan_tidur(row["hasil"]))
 
 # ==============================
-# 8️⃣ Riwayat Prediksi
+# 🔟 RIWAYAT + EXPORT
 # ==============================
 elif menu == "🕓 Riwayat Prediksi":
-    st.title("🕓 Riwayat Prediksi")
-    if len(st.session_state.riwayat) == 0:
-        st.write("Belum ada data.")
+    conn = get_conn()
+    df = pd.read_sql("""
+        SELECT nama, usia, bmi, kategori_bmi, hasil,
+               prob_normal, prob_insomnia, prob_apnea, last_active
+        FROM riwayat
+        WHERE session_id = ?
+        ORDER BY last_active DESC
+    """, conn, params=(st.session_state.session_id,))
+    conn.close()
+
+    if df.empty:
+        st.write("Belum ada data")
     else:
-        st.dataframe(pd.DataFrame(st.session_state.riwayat))
+        st.dataframe(df)
+
+        st.download_button(
+            "⬇️ Unduh CSV",
+            df.to_csv(index=False),
+            "riwayat_prediksi.csv",
+            "text/csv"
+        )
+
+        def export_pdf(df):
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=9)
+            for col in df.columns:
+                pdf.cell(30, 8, col, border=1)
+            pdf.ln()
+            for _, row in df.iterrows():
+                for item in row:
+                    pdf.cell(30, 8, str(item), border=1)
+                pdf.ln()
+            return pdf.output(dest="S").encode("latin1")
+
+        st.download_button(
+            "⬇️ Unduh PDF",
+            export_pdf(df),
+            "riwayat_prediksi.pdf",
+            "application/pdf"
+        )
 
 # ==============================
-# 9️⃣ Tips Tidur
+# 11️⃣ TIPS
 # ==============================
 elif menu == "💤 Tips Tidur Sehat":
-    st.title("💤 Tips Tidur Sehat")
-    st.markdown("""
-    - Tidur dan bangun di jam yang sama
-    - Kurangi kafein dan gadget sebelum tidur
-    - Kelola stres dengan relaksasi
-    - Rutin berolahraga ringan
-    """)
+    st.markdown("- Tidur teratur\n- Kurangi kafein\n- Kelola stres")
 
 # ==============================
-# 🔟 Tentang
+# 12️⃣ TENTANG
 # ==============================
 elif menu == "ℹ️ Tentang":
-    st.title("ℹ️ Tentang")
     st.markdown("""
-    - **Aplikasi:** Sistem Deteksi Gangguan Tidur
-    - **Metode:** Support Vector Machine (SVM)
-    - **Pengembang:** Satria Dava Riansa (G.211.22.0006) – Universitas Semarang
+    **Metode:** Support Vector Machine (SVM)  
+    **Pengembang:** Satria Dava Riansa – Universitas Semarang
     """)
