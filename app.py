@@ -186,6 +186,7 @@ elif menu == "🧮 Prediksi Tidur":
             prob_dict = {
                 k: round(v * 100, 2)
                 for k, v in prob_display.items()
+            }
 
             conn = get_conn()
             c = conn.cursor()
