@@ -167,7 +167,8 @@ elif menu == "🧮 Prediksi Tidur":
                     diastolic
                 ]], columns=feature_columns)
 
-            prob = model.predict_proba(scaler.transform(X))[0]
+            X_scaled = scaler.transform(X_input)
+            prob = model.predict_proba(X_scaled)[0]
             probs = dict(zip(label_classes, prob))
 
             # ==============================
