@@ -139,6 +139,9 @@ elif menu == "🧮 Prediksi Tidur":
             
             hasil_api = response.json()
             
+            st.write(response.status_code)
+            st.write(hasil_api)
+            
             hasil = hasil_api["prediction"]
             
             prob_dict = hasil_api["probability"]
