@@ -124,24 +124,24 @@ elif menu == "🧮 Prediksi Tidur":
         else:
             response = requests.post(
     	    	"http://sleep-disorder-app-production.up.railway.app/predict",
-       		json={
+       		    json={
               	    "Age": umur,
-        	    "Sleep_Duration": durasi_tidur,
-        	    "Quality_of_Sleep": kualitas_tidur,
-        	    "Physical_Activity_Level": aktivitas_fisik,
-        	    "Stress_Level": tingkat_stres,
-        	    "Heart_Rate": heart_rate,
-        	    "Daily_Steps": daily_steps,
-        	    "Systolic_BP": systolic,
-        	    "Diastolic_BP": diastolic
-    	  	}
-	    )
+        	        "Sleep_Duration": durasi_tidur,
+        	        "Quality_of_Sleep": kualitas_tidur,
+        	        "Physical_Activity_Level": aktivitas_fisik,
+        	        "Stress_Level": tingkat_stres,
+        	        "Heart_Rate": heart_rate,
+        	        "Daily_Steps": daily_steps,
+        	        "Systolic_BP": systolic,
+        	        "Diastolic_BP": diastolic
+    	  	    }
+	        )
 
-	    hasil_api = response.json()
-
-	    hasil = hasil_api["prediction"]
-
-	    prob_dict = hasil_api["probability"]
+		    hasil_api = response.json()
+	
+		    hasil = hasil_api["prediction"]
+	
+		    prob_dict = hasil_api["probability"]
 
             st.session_state.last_pred = {
                 "BMI": bmi,
