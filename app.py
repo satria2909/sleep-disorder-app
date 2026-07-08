@@ -3,13 +3,6 @@ import pandas as pd
 import joblib
 import numpy as np
 
-# ==============================
-# 1️⃣ Load Model Bundle
-# ==============================
-bundle = joblib.load("best_sleep_disorder_model.pkl")
-
-model = bundle["model"]
-scaler = bundle["scaler"]
 feature_columns = bundle["feature_columns"]   # 9 fitur
 label_encoder = bundle["label_encoder"]
 label_classes = label_encoder.classes_
@@ -143,8 +136,24 @@ elif menu == "🧮 Prediksi Tidur":
                 diastolic
             ]], columns=feature_columns)
 
-            X_scaled = scaler.transform(X_input)
-            prob = model.predict_proba(X_scaled)[0]
+            import requests
+
+            response = requests.post(
+                "http://127.0.0.1:8000/predict",
+                json={
+                    "Age": umur,
+                    "Sleep Duration": durasi_tidur,
+                    "Quality of Sleep": kualitas_tidur,
+                    "Physical Activity Level": aktivitas_fisik,
+                    "Stress Level": tingkat_stres,
+                    "Heart Rate": heart_rate,
+                    "Daily Steps": daily_steps,
+                    "Systolic_BP": systolic,
+                    "Diastolic_BP": diastolic
+                }
+            )
+            
+            hasil = response.json()
 
             probs = dict(zip(label_classes, prob))
 
