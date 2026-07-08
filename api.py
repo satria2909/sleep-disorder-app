@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from schemas import PredictionRequest
-from service import predict_sleep
+from services import predict_sleep
 
 app = FastAPI(
     title="Sleep Disorder API",
