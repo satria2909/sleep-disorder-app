@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import traceback
 
 from schemas import PredictionRequest
 from services import predict_sleep
@@ -34,5 +35,10 @@ def health():
 
 @app.post("/predict")
 def predict(data: PredictionRequest):
-
-    return predict_sleep(data)
+    try:
+        return predict_sleep(data)
+    except Exception as e:
+        print("========== ERROR ==========")
+        traceback.print_exc()
+        print("===========================")
+        raise e
