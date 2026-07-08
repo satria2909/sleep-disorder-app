@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
-import joblib
 import numpy as np
 
-feature_columns = bundle["feature_columns"]   # 9 fitur
-label_encoder = bundle["label_encoder"]
-label_classes = label_encoder.classes_
+# ==============================
+# 1️⃣ Load Model Bundle
+# ==============================
+
+import requests
 
 # ==============================
 # 2️⃣ Konfigurasi Halaman
@@ -121,52 +122,26 @@ elif menu == "🧮 Prediksi Tidur":
         if nama.strip() == "":
             st.warning("Nama wajib diisi.")
         else:
-            # ==============================
-            # INPUT MODEL (9 FITUR)
-            # ==============================
-            X_input = pd.DataFrame([[
-                umur,
-                durasi_tidur,
-                kualitas_tidur,
-                aktivitas_fisik,
-                tingkat_stres,
-                heart_rate,
-                daily_steps,
-                systolic,
-                diastolic
-            ]], columns=feature_columns)
-
-            import requests
-
             response = requests.post(
-                "http://127.0.0.1:8000/predict",
-                json={
-                    "Age": umur,
-                    "Sleep Duration": durasi_tidur,
-                    "Quality of Sleep": kualitas_tidur,
-                    "Physical Activity Level": aktivitas_fisik,
-                    "Stress Level": tingkat_stres,
-                    "Heart Rate": heart_rate,
-                    "Daily Steps": daily_steps,
-                    "Systolic_BP": systolic,
-                    "Diastolic_BP": diastolic
-                }
-            )
-            
-            hasil = response.json()
+    	    	"http://127.0.0.1:8000/predict",
+       		json={
+              	    "Age": umur,
+        	    "Sleep_Duration": durasi_tidur,
+        	    "Quality_of_Sleep": kualitas_tidur,
+        	    "Physical_Activity_Level": aktivitas_fisik,
+        	    "Stress_Level": tingkat_stres,
+        	    "Heart_Rate": heart_rate,
+        	    "Daily_Steps": daily_steps,
+        	    "Systolic_BP": systolic,
+        	    "Diastolic_BP": diastolic
+    	  	}
+	    )
 
-            probs = dict(zip(label_classes, prob))
+	    hasil_api = response.json()
 
-            # ==============================
-            # 🔥 PREDIKSI FINAL (ARGMAX)
-            # ==============================
+	    hasil = hasil_api["prediction"]
 
-            prob_dict = {
-                k: round(v * 100, 2)
-                for k, v in probs.items()
-            }
-
-            hasil = max(prob_dict, key=prob_dict.get)
+	    prob_dict = hasil_api["probability"]
 
             st.session_state.last_pred = {
                 "BMI": bmi,
