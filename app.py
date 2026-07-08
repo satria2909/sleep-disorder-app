@@ -138,9 +138,16 @@ elif menu == "🧮 Prediksi Tidur":
             )
             
             hasil_api = response.json()
+
+            st.write("Status Code:", response.status_code)
+            st.write("Response API:", hasil_api)
             
-            st.write(response.status_code)
-            st.write(hasil_api)
+            if response.status_code != 200:
+                st.error("API Error")
+                st.stop()
+            
+            hasil = hasil_api["prediction"]
+            prob_dict = hasil_api["probability"]
             
             hasil = hasil_api["prediction"]
             
