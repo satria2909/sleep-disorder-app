@@ -123,7 +123,7 @@ elif menu == "🧮 Prediksi Tidur":
             st.warning("Nama wajib diisi.")
         else:
             response = requests.post(
-    	    	"http://127.0.0.1:8000/predict",
+    	    	"http://sleep-disorder-app-production.up.railway.app/predict",
        		json={
               	    "Age": umur,
         	    "Sleep_Duration": durasi_tidur,
