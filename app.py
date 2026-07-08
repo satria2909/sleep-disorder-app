@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import os
+
+API_URL = os.getenv(
+    "API_URL",
+    "https://sleep-disorder-app-production.up.railway.app"
+)
 
 # ==============================
 # 1️⃣ Load Model Bundle
@@ -123,7 +129,7 @@ elif menu == "🧮 Prediksi Tidur":
             st.warning("Nama wajib diisi.")
         else:
             response = requests.post(
-                "https://sleep-disorder-app-production.up.railway.app/predict",
+                f"{API_URL}/predict",
                 json={
                     "Age": umur,
                     "Sleep_Duration": durasi_tidur,
@@ -134,7 +140,8 @@ elif menu == "🧮 Prediksi Tidur":
                     "Daily_Steps": daily_steps,
                     "Systolic_BP": systolic,
                     "Diastolic_BP": diastolic
-                }
+                },
+                timeout=10
             )
             
             hasil_api = response.json()
