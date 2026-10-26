@@ -97,7 +97,7 @@ if menu == "🏠 Beranda":
         st.image(
             "sleep.png",
             caption="Sistem Deteksi Gangguan Tidur Berbasis SVM",
-            width=300
+            width=400
         )
 
 
