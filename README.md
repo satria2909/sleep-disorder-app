@@ -7,8 +7,21 @@ Aplikasi Web Deteksi Gangguan Tidur Menggunakan SVM Menggunakan Streamlit.
 - Prediksi Tidur
 - Hasil Prediksi
 - Riwayat Prediksi
-- Tips Tidur Sehat
 
-## Preview
+## Beranda
 
-![preview img](/preview.png)
+![preview img](/beranda.png)
+
+## Prediksi Tidur
+
+![preview img](/prediksi.png)
+
+## Hasil Prediksi
+
+![preview img](/hasil.png)
+
+## Riwayat Prediksi
+
+![preview img](/riwayat.png)
+
+
