@@ -1,18 +1,13 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import os
-
-API_URL = os.getenv(
-    "API_URL",
-    "https://sleep-disorder-app-production.up.railway.app"
-)
 
 # ==============================
-# 1️⃣ Load Model Bundle
+# 1️⃣ Load Model Langsung (tanpa API / tanpa Railway)
 # ==============================
 
-import requests
+from services import predict_sleep
+from schemas import PredictionRequest
 
 # ==============================
 # 2️⃣ Konfigurasi Halaman
@@ -134,26 +129,29 @@ elif menu == "🧮 Prediksi Tidur":
         if nama.strip() == "":
             st.warning("Nama wajib diisi.")
         else:
-            response = requests.post(
-                f"{API_URL}/predict",
-                json={
-                    "Age": umur,
-                    "Sleep_Duration": durasi_tidur,
-                    "Quality_of_Sleep": kualitas_tidur,
-                    "Physical_Activity_Level": aktivitas_fisik,
-                    "Stress_Level": tingkat_stres,
-                    "Heart_Rate": heart_rate,
-                    "Daily_Steps": daily_steps,
-                    "Systolic_BP": systolic,
-                    "Diastolic_BP": diastolic
-                },
-                timeout=10
-            )
-            
-            hasil_api = response.json()
-            
+            try:
+                data_input = PredictionRequest(
+                    Age=umur,
+                    Sleep_Duration=durasi_tidur,
+                    Quality_of_Sleep=kualitas_tidur,
+                    Physical_Activity_Level=aktivitas_fisik,
+                    Stress_Level=tingkat_stres,
+                    Heart_Rate=heart_rate,
+                    Daily_Steps=daily_steps,
+                    Systolic_BP=systolic,
+                    Diastolic_BP=diastolic
+                )
+                hasil_api = predict_sleep(data_input)
+            except Exception as e:
+                st.error(f"Gagal melakukan prediksi: {e}")
+                st.stop()
+
+            if "prediction" not in hasil_api or "probability" not in hasil_api:
+                st.error(f"Respons prediksi tidak sesuai format: {hasil_api}")
+                st.stop()
+
             hasil = hasil_api["prediction"]
-            
+
             prob_dict = hasil_api["probability"]
 
             st.session_state.last_pred = {
