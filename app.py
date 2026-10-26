@@ -92,11 +92,14 @@ if menu == "🏠 Beranda":
     st.title("😴 Sistem Deteksi Gangguan Tidur")
     st.write("Aplikasi deteksi gangguan tidur berbasis **Support Vector Machine (SVM)**.")
     st.info("Gunakan menu di kiri untuk melakukan prediksi.")
-    st.image(
-        "sleep.png",
-        caption="Sistem Deteksi Gangguan Tidur Berbasis SVM",
-        width=500  # ganti jadi 400, 600, 700, dst sesuai maumu
-    )
+    kiri, tengah, kanan = st.columns([1, 2, 1])
+    with tengah:
+        st.image(
+            "sleep.png",
+            caption="Sistem Deteksi Gangguan Tidur Berbasis SVM",
+            width=300
+        )
+
 
 
 
