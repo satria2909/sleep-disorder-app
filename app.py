@@ -35,9 +35,10 @@ html, body, [class*="css"] {
    Jangan paksa latar terang di sini — kalau dipaksa, widget & label mode gelap
    jadi tidak terbaca. */
 
-/* Konten 1080px lebar (tengah) — kembali seperti awal */
+/* Konten 1440px lebar (tengah) — dilebarkan dari 1080px supaya teks navbar
+   desktop tidak kepotong */
 .block-container {
-    max-width: 1080px;
+    max-width: 1440px;
     padding-top: 4.5rem;
     padding-bottom: 3rem;
     padding-left: 2rem;
