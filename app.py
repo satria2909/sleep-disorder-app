@@ -324,15 +324,6 @@ if menu == "🏠 Beranda":
     with s3:
         st.markdown('<div class="stat"><div class="num">3 Kelas</div><div class="lbl">Normal &bull; Insomnia &bull; Sleep Apnea</div></div>', unsafe_allow_html=True)
 
-    st.markdown('<div style="height: 0.6rem;"></div>', unsafe_allow_html=True)
-    kiri, tengah, kanan = st.columns([1, 2, 1])
-    with tengah:
-        st.image(
-            "sleep.png",
-            caption="Sistem Deteksi Gangguan Tidur Berbasis SVM",
-            width=500
-        )
-
     if st.button("🔮 Mulai Prediksi Sekarang"):
         st.session_state["menu"] = "🧮 Prediksi Tidur"
         st.rerun()
