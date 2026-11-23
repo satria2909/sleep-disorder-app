@@ -85,6 +85,18 @@ h1, h2, h3 {
     border-color: #2dd4bf !important;
 }
 
+/* Navbar desktop: teks label ditampilkan di samping ikon via ::after.
+   Label tombol di Python hanya ikon; teks ditambah di sini supaya di HP
+   tombol bisa tampil ikon saja. Blok nav dikenali dari 6 kolomnya. */
+@media (min-width: 641px) {
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(1) .stButton > button::after { content: " Beranda"; }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(2) .stButton > button::after { content: " Prediksi Tidur"; }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(3) .stButton > button::after { content: " Hasil Prediksi"; }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(4) .stButton > button::after { content: " Riwayat Prediksi"; }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(5) .stButton > button::after { content: " Tips Tidur Sehat"; }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6) .stButton > button::after { content: " Tentang"; }
+}
+
 /* Input membulat */
 .stTextInput input, .stNumberInput input {
     border-radius: 12px !important;
@@ -255,12 +267,33 @@ h1, h2, h3 {
     [data-testid="stHorizontalBlock"] {
         flex-direction: column !important;
     }
-    [data-testid="column"] {
+    [data-testid="column"], [data-testid="stColumn"] {
         width: 100% !important;
         flex: 1 1 100% !important;
     }
     .stButton > button {
         width: 100% !important;
+    }
+    /* Navbar HP: 6 tombol ikon saja (tanpa teks) dalam satu baris, bulat,
+       menggantikan 6 baris menumpuk. Blok nav dikenali dari 6 kolomnya. */
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) {
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 0.4rem !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]) {
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) .stButton > button {
+        width: 44px !important;
+        min-width: 44px !important;
+        height: 44px !important;
+        padding: 0 !important;
+        font-size: 1.25rem !important;
+        border-radius: 50% !important;
     }
 }
 </style>
@@ -363,9 +396,12 @@ with h_kanan:
     st.markdown('<div style="height: 1rem;"></div>', unsafe_allow_html=True)
     _nav = st.columns(len(MENU_ITEMS))
     for _i, _item in enumerate(MENU_ITEMS):
+        # Label tombol cukup ikonnya saja; teks label ditampilkan di desktop
+        # via CSS ::after, dan di HP tombol tampil ikon saja (tanpa teks).
+        _ikon = _item.split(" ", 1)[0]
         with _nav[_i]:
             if st.button(
-                _item,
+                _ikon,
                 key=f"nav_{_i}",
                 type="primary" if st.session_state.menu == _item else "secondary",
                 use_container_width=True,
