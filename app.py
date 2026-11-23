@@ -417,40 +417,27 @@ elif menu == "🧮 Prediksi Tidur":
 
     with st.container():
         st.markdown("### 👤 Data Diri")
-        c1, c2 = st.columns([2, 1])
-        with c1:
-            nama = st.text_input("Nama Lengkap")
-        with c2:
-            umur = st.number_input("Usia (tahun)", 1, 100, 30)
+        nama = st.text_input("Nama Lengkap")
+        umur = st.number_input("Usia (tahun)", 1, 100, 30)
 
         st.markdown("### ⚖️ Fisik & BMI")
-        c1, c2 = st.columns(2)
-        with c1:
-            tinggi = st.number_input("Tinggi Badan (cm)", 140, 220, 170)
-        with c2:
-            berat = st.number_input("Berat Badan (kg)", 40, 200, 65)
+        tinggi = st.number_input("Tinggi Badan (cm)", 140, 220, 170)
+        berat = st.number_input("Berat Badan (kg)", 40, 200, 65)
         bmi = hitung_bmi(tinggi, berat)
         kategori_bmi = kategori_bmi_text(bmi)
         st.metric(label="Body Mass Index (BMI)", value=f"{bmi:.2f}", delta=kategori_bmi)
 
         st.markdown("### 🌙 Pola Tidur")
-        c_pola, _ = st.columns(2)
-        with c_pola:
-            durasi_tidur = st.number_input("Durasi Tidur (jam/hari)", 0.0, 24.0, 6.0)
-            kualitas_tidur = st.slider("Kualitas Tidur (1–10)", 1, 10, 5)
-            aktivitas_fisik = st.slider("Aktivitas Fisik (1–100)", 1, 100, 40)
-            tingkat_stres = st.slider("Tingkat Stres (1–10)", 1, 10, 7)
+        durasi_tidur = st.number_input("Durasi Tidur (jam/hari)", 0.0, 24.0, 6.0)
+        kualitas_tidur = st.slider("Kualitas Tidur (1–10)", 1, 10, 5)
+        aktivitas_fisik = st.slider("Aktivitas Fisik (1–100)", 1, 100, 40)
+        tingkat_stres = st.slider("Tingkat Stres (1–10)", 1, 10, 7)
 
         st.markdown("### ❤️ Kesehatan")
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            heart_rate = st.number_input("Detak Jantung (bpm)", 40, 180, 72)
-        with c2:
-            daily_steps = st.number_input("Langkah Harian", 0, 50000, 5000)
-        with c3:
-            systolic = st.number_input("Tekanan Darah Sistolik", 80, 200, 120)
-        with c4:
-            diastolic = st.number_input("Tekanan Darah Diastolik", 40, 130, 80)
+        heart_rate = st.number_input("Detak Jantung (bpm)", 40, 180, 72)
+        daily_steps = st.number_input("Langkah Harian", 0, 50000, 5000)
+        systolic = st.number_input("Tekanan Darah Sistolik", 80, 200, 120)
+        diastolic = st.number_input("Tekanan Darah Diastolik", 40, 130, 80)
 
     if st.button("🔮 Prediksi Sekarang", type="primary"):
         if nama.strip() == "":
