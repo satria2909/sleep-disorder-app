@@ -266,13 +266,22 @@ h1, h2, h3 {
     .stButton > button {
         width: 100% !important;
     }
-    /* Logo & judul dipusatkan di HP */
-    [data-testid="stImage"], .brand-logo {
-        display: flex !important;
-        justify-content: center !important;
-    }
+    /* Logo di kiri judul, sebaris & rata tengah di HP (tidak menumpuk).
+       Blok brand dikenali: mengandung .brand-title tapi tanpa blok kolom bersarang. */
     .brand-title {
         text-align: center !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(.brand-title):not(:has([data-testid="stHorizontalBlock"])) {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0.7rem !important;
+    }
+    [data-testid="stHorizontalBlock"]:has(.brand-title):not(:has([data-testid="stHorizontalBlock"])) > :is([data-testid="column"], [data-testid="stColumn"]) {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
     }
     /* Navbar HP: grid 2 kolom x 3 baris, teks kembali tampil.
        Blok nav dikenali dari 6 kolomnya. */
