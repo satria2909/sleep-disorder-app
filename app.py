@@ -35,9 +35,9 @@ html, body, [class*="css"] {
    Jangan paksa latar terang di sini — kalau dipaksa, widget & label mode gelap
    jadi tidak terbaca. */
 
-/* Konten 80% lebar layar (tengah) */
+/* Konten 1080px lebar (tengah) — kembali seperti awal */
 .block-container {
-    max-width: 80%;
+    max-width: 1080px;
     padding-top: 4.5rem;
     padding-bottom: 3rem;
     padding-left: 2rem;
