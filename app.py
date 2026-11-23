@@ -323,7 +323,7 @@ if menu == "🏠 Beranda":
         st.markdown('<div class="stat"><div class="num">SVM</div><div class="lbl">Metode Klasifikasi</div></div>', unsafe_allow_html=True)
     with s3:
         st.markdown('<div class="stat"><div class="num">3 Kelas</div><div class="lbl">Normal &bull; Insomnia &bull; Sleep Apnea</div></div>', unsafe_allow_html=True)
-    </div>
+
     if st.button("🔮 Mulai Prediksi Sekarang"):
         st.session_state["menu"] = "🧮 Prediksi Tidur"
         st.rerun()
