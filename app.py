@@ -64,11 +64,12 @@ h1, h2, h3 {
     box-shadow: 0 12px 26px rgba(13, 148, 136, 0.45);
 }
 
-/* Tombol secondary (nav tidak aktif): gradasi abu — terang di mode terang,
-   gelap di mode gelap (mengikuti variabel tema Streamlit) */
+/* Tombol secondary (nav tidak aktif): gradasi abu terang.
+   Mode gelap di-override di @media di bawah (variabel tema Streamlit
+   ternyata tidak terbaca di setup ini, jadi pakai warna eksplisit). */
 .stButton > button[kind="secondary"] {
-    background: linear-gradient(135deg, var(--secondary-background-color, #dbe2ea), var(--background-color, #f4f7fa)) !important;
-    color: var(--text-color, #0f766e) !important;
+    background: linear-gradient(135deg, #dbe2ea, #f4f7fa) !important;
+    color: #0f766e !important;
     border: 1.5px solid #99f6e4 !important;
     border-radius: 999px !important;
     padding: 0.65rem 0.6rem !important;
@@ -89,9 +90,9 @@ h1, h2, h3 {
     border-radius: 12px !important;
 }
 
-/* Kartu: gradasi abu — terang di mode terang, gelap di mode gelap */
+/* Kartu: gradasi abu terang */
 .card {
-    background: linear-gradient(135deg, var(--secondary-background-color, #dbe2ea), var(--background-color, #f4f7fa));
+    background: linear-gradient(135deg, #dbe2ea, #f4f7fa);
     border: 1px solid #ccfbf1;
     border-radius: 20px;
     padding: 1.4rem 1.6rem;
@@ -129,9 +130,9 @@ h1, h2, h3 {
     margin: 0;
 }
 
-/* Kartu statistik kecil: gradasi abu */
+/* Kartu statistik kecil: gradasi abu terang */
 .stat {
-    background: linear-gradient(135deg, var(--secondary-background-color, #dbe2ea), var(--background-color, #f4f7fa));
+    background: linear-gradient(135deg, #dbe2ea, #f4f7fa);
     border: 1px solid #ccfbf1;
     border-radius: 18px;
     padding: 1.1rem 1.2rem;
@@ -213,6 +214,28 @@ h1, h2, h3 {
     font-weight: 700;
     margin-right: 0.4rem;
     margin-bottom: 0.4rem;
+}
+
+/* Mode gelap: tombol & kartu jadi gradasi abu GELAP + teks terang */
+@media (prefers-color-scheme: dark) {
+    .stButton > button[kind="secondary"] {
+        background: linear-gradient(135deg, #1e293b, #334155) !important;
+        color: #e2e8f0 !important;
+        border-color: #475569 !important;
+    }
+    .stButton > button[kind="secondary"]:hover {
+        border-color: #2dd4bf !important;
+    }
+    .card, .stat {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        border-color: #475569;
+    }
+    .stat .num {
+        color: #2dd4bf;
+    }
+    .card p {
+        color: #e2e8f0 !important;
+    }
 }
 </style>
 """
@@ -301,7 +324,7 @@ with _logo2:
         """
         <div style="padding-top: 0.3rem;">
             <div style="font-size: 1.35rem; font-weight: 800; color: #14b8a6; line-height: 1.1;">Deteksi Tidur</div>
-            <div style="font-size: 0.85rem; color: var(--text-color, #64748b); opacity: 0.75;">SVM &bull; Streamlit</div>
+            <div style="font-size: 0.85rem; color: #94a3b8;">SVM &bull; Streamlit</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -521,7 +544,7 @@ elif menu == "💤 Tips Tidur Sehat":
             st.markdown(
                 f'<div class="card"><div style="font-size: 1.6rem;">{ikon}</div>'
                 f'<h3 style="margin: 0.3rem 0;">{judul}</h3>'
-                f'<p style="color: var(--text-color, #475569); line-height: 1.6; margin: 0;">{isi}</p></div>',
+                f'<p style="line-height: 1.6; margin: 0;">{isi}</p></div>',
                 unsafe_allow_html=True,
             )
 
