@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -42,38 +43,44 @@ html, body, [class*="css"] {
     padding-bottom: 3rem;
 }
 
-/* Sidebar: gradasi teal */
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0f766e 0%, #0d9488 55%, #0891b2 100%);
-}
-[data-testid="stSidebar"] * {
-    color: #f0fdfa !important;
-}
-[data-testid="stSidebar"] .stRadio label {
-    font-weight: 600;
-}
-
 /* Judul halaman */
 h1, h2, h3 {
     color: #134e4a !important;
     letter-spacing: -0.02em;
 }
 
-/* Tombol utama: gradasi teal -> cyan, membulat */
-.stButton > button {
+/* Tombol primary (aktif / aksi utama): gradasi teal -> cyan, membulat */
+.stButton > button[kind="primary"] {
     background: linear-gradient(90deg, #0d9488, #06b6d4) !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 999px !important;
-    padding: 0.65rem 1.8rem !important;
+    padding: 0.65rem 1.4rem !important;
     font-weight: 700 !important;
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     box-shadow: 0 8px 20px rgba(13, 148, 136, 0.35);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.stButton > button:hover {
+.stButton > button[kind="primary"]:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 26px rgba(13, 148, 136, 0.45);
+}
+
+/* Tombol secondary (nav tidak aktif): putih, border teal muda */
+.stButton > button[kind="secondary"] {
+    background: #ffffff !important;
+    color: #0f766e !important;
+    border: 1.5px solid #99f6e4 !important;
+    border-radius: 999px !important;
+    padding: 0.65rem 0.6rem !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    box-shadow: none !important;
+    transition: background 0.15s ease;
+}
+.stButton > button[kind="secondary"]:hover {
+    background: #f0fdfa !important;
+    border-color: #0d9488 !important;
 }
 
 /* Input membulat */
@@ -272,30 +279,53 @@ def keterangan_tidur(label):
         )
 
 # ==============================
-# 5️⃣ Sidebar Navigasi
+# 5️⃣ Navbar Atas (logo sleep.png + tombol navigasi)
 # ==============================
-st.sidebar.markdown(
-    """
-    <div style="padding: 0.4rem 0 1rem 0;">
-        <div style="font-size: 2rem;">😴</div>
-        <div style="font-size: 1.25rem; font-weight: 800; color: #ffffff; line-height: 1.2;">Deteksi Tidur</div>
-        <div style="font-size: 0.82rem; color: #ccfbf1;">SVM &bull; Streamlit</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-menu = st.sidebar.radio(
-    "Navigasi",
-    [
-        "🏠 Beranda",
-        "🧮 Prediksi Tidur",
-        "📊 Hasil Prediksi",
-        "🕓 Riwayat Prediksi",
-        "💤 Tips Tidur Sehat",
-        "ℹ️ Tentang"
-    ],
-    key="menu"
-)
+MENU_ITEMS = [
+    "🏠 Beranda",
+    "🧮 Prediksi Tidur",
+    "📊 Hasil Prediksi",
+    "🕓 Riwayat Prediksi",
+    "💤 Tips Tidur Sehat",
+    "ℹ️ Tentang",
+]
+
+if "menu" not in st.session_state:
+    st.session_state.menu = "🏠 Beranda"
+
+# Bar atas: logo sleep.png + nama aplikasi
+_logo1, _logo2 = st.columns([0.6, 5])
+with _logo1:
+    if os.path.exists("sleep.png"):
+        st.image("sleep.png", width=56)
+    else:
+        st.markdown('<div style="font-size: 2.4rem;">😴</div>', unsafe_allow_html=True)
+with _logo2:
+    st.markdown(
+        """
+        <div style="padding-top: 0.3rem;">
+            <div style="font-size: 1.35rem; font-weight: 800; color: #0f766e; line-height: 1.1;">Deteksi Tidur</div>
+            <div style="font-size: 0.85rem; color: #64748b;">SVM &bull; Streamlit</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# Tombol navigasi di atas (yang aktif tampil teal, sisanya putih)
+_nav = st.columns(len(MENU_ITEMS))
+for _i, _item in enumerate(MENU_ITEMS):
+    with _nav[_i]:
+        if st.button(
+            _item,
+            key=f"nav_{_i}",
+            type="primary" if st.session_state.menu == _item else "secondary",
+            use_container_width=True,
+        ):
+            st.session_state.menu = _item
+            st.rerun()
+
+menu = st.session_state.menu
+st.markdown("---")
 
 if "riwayat" not in st.session_state:
     st.session_state.riwayat = []
@@ -324,7 +354,7 @@ if menu == "🏠 Beranda":
     with s3:
         st.markdown('<div class="stat"><div class="num">3 Kelas</div><div class="lbl">Normal &bull; Insomnia &bull; Sleep Apnea</div></div>', unsafe_allow_html=True)
 
-    if st.button("🔮 Mulai Prediksi Sekarang"):
+    if st.button("🔮 Mulai Prediksi Sekarang", type="primary"):
         st.session_state["menu"] = "🧮 Prediksi Tidur"
         st.rerun()
 
@@ -376,7 +406,7 @@ elif menu == "🧮 Prediksi Tidur":
         diastolic = st.number_input("Tekanan Darah Diastolik", 40, 130, 80)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    if st.button("🔮 Prediksi Sekarang"):
+    if st.button("🔮 Prediksi Sekarang", type="primary"):
         if nama.strip() == "":
             st.warning("Nama wajib diisi.")
         else:
