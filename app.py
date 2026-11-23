@@ -75,9 +75,9 @@ h1, h2, h3 {
     color: #e2e8f0 !important;
     border: 1.5px solid #475569 !important;
     border-radius: 999px !important;
-    padding: 0.65rem 0.6rem !important;
+    padding: 0.45rem 0.5rem !important;
     font-weight: 700 !important;
-    font-size: 0.9rem !important;
+    font-size: 0.85rem !important;
     box-shadow: none !important;
     transition: border-color 0.15s ease;
 }
@@ -338,36 +338,40 @@ MENU_ITEMS = [
 if "menu" not in st.session_state:
     st.session_state.menu = "🏠 Beranda"
 
-# Bar atas: logo sleep.png + nama aplikasi
-_logo1, _logo2 = st.columns([0.6, 5])
-with _logo1:
-    if os.path.exists("sleep.png"):
-        st.image("sleep.png", width=56)
-    else:
-        st.markdown('<div style="font-size: 2.4rem;">😴</div>', unsafe_allow_html=True)
-with _logo2:
-    st.markdown(
-        """
-        <div style="padding-top: 0.3rem;">
-            <div style="font-size: 1.35rem; font-weight: 800; color: #14b8a6; line-height: 1.1;">Deteksi Tidur</div>
-            <div style="font-size: 0.85rem; color: #94a3b8;">SVM &bull; Streamlit</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# Tombol navigasi di atas (yang aktif tampil teal, sisanya putih)
-_nav = st.columns(len(MENU_ITEMS))
-for _i, _item in enumerate(MENU_ITEMS):
-    with _nav[_i]:
-        if st.button(
-            _item,
-            key=f"nav_{_i}",
-            type="primary" if st.session_state.menu == _item else "secondary",
-            use_container_width=True,
-        ):
-            st.session_state.menu = _item
-            st.rerun()
+# Header: logo + judul di kiri, tombol nav di kanan (layout seperti web Gerindra).
+# Tombol tetap oval bergradasi — hanya tata letaknya yang berubah.
+h_kiri, h_kanan = st.columns([2, 6], gap="small")
+with h_kiri:
+    _lg1, _lg2 = st.columns([0.55, 2], gap="small")
+    with _lg1:
+        if os.path.exists("sleep.png"):
+            st.image("sleep.png", width=64)
+        else:
+            st.markdown('<div style="font-size: 2.8rem;">😴</div>', unsafe_allow_html=True)
+    with _lg2:
+        st.markdown(
+            """
+            <div style="padding-top: 0.3rem;">
+                <div style="font-size: 1.55rem; font-weight: 800; color: #14b8a6; line-height: 1.1;">Deteksi Tidur</div>
+                <div style="font-size: 0.9rem; color: #94a3b8;">SVM &bull; Streamlit</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+with h_kanan:
+    # Dorong tombol ke tengah vertikal agar sejajar dengan logo/judul
+    st.markdown('<div style="height: 1rem;"></div>', unsafe_allow_html=True)
+    _nav = st.columns(len(MENU_ITEMS))
+    for _i, _item in enumerate(MENU_ITEMS):
+        with _nav[_i]:
+            if st.button(
+                _item,
+                key=f"nav_{_i}",
+                type="primary" if st.session_state.menu == _item else "secondary",
+                use_container_width=True,
+            ):
+                st.session_state.menu = _item
+                st.rerun()
 
 menu = st.session_state.menu
 st.markdown("---")
