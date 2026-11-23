@@ -31,10 +31,9 @@ html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Latar aplikasi */
-.stApp {
-    background: linear-gradient(180deg, #f0fdfa 0%, #f8fafc 60%, #ecfeff 100%);
-}
+/* Latar aplikasi mengikuti tema Streamlit (terang/gelap) agar mode gelap berfungsi.
+   Jangan paksa latar terang di sini — kalau dipaksa, widget & label mode gelap
+   jadi tidak terbaca. */
 
 /* Batasi lebar konten agar rapi */
 .block-container {
@@ -43,9 +42,8 @@ html, body, [class*="css"] {
     padding-bottom: 3rem;
 }
 
-/* Judul halaman */
+/* Judul halaman — warna mengikuti tema (terang/gelap) agar selalu terbaca */
 h1, h2, h3 {
-    color: #134e4a !important;
     letter-spacing: -0.02em;
 }
 
@@ -191,7 +189,6 @@ h1, h2, h3 {
     display: flex;
     justify-content: space-between;
     font-weight: 700;
-    color: #134e4a;
     font-size: 0.95rem;
     margin-bottom: 0.35rem;
 }
@@ -367,7 +364,6 @@ elif menu == "🧮 Prediksi Tidur":
     st.markdown("Isi data di bawah ini — model akan mengklasifikasikan kondisi tidurmu.")
 
     with st.container():
-        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.markdown("### 👤 Data Diri")
         nama = st.text_input("Nama Lengkap")
         c1, c2 = st.columns(2)
@@ -405,7 +401,6 @@ elif menu == "🧮 Prediksi Tidur":
         with c3:
             systolic = st.number_input("Tekanan Darah Sistolik", 80, 200, 120)
         diastolic = st.number_input("Tekanan Darah Diastolik", 40, 130, 80)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     if st.button("🔮 Prediksi Sekarang", type="primary"):
         if nama.strip() == "":
@@ -502,9 +497,7 @@ elif menu == "🕓 Riwayat Prediksi":
     if len(st.session_state.riwayat) == 0:
         st.info("Belum ada data riwayat.")
     else:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
         st.dataframe(pd.DataFrame(st.session_state.riwayat), use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
         if st.button("🗑️ Hapus Riwayat"):
             st.session_state.riwayat = []
             st.rerun()
