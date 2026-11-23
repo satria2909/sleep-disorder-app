@@ -35,11 +35,13 @@ html, body, [class*="css"] {
    Jangan paksa latar terang di sini — kalau dipaksa, widget & label mode gelap
    jadi tidak terbaca. */
 
-/* Batasi lebar konten agar rapi */
+/* Konten full lebar (kiri-kanan) tanpa ruang kosong di sisi */
 .block-container {
-    max-width: 1080px;
+    max-width: 100%;
     padding-top: 4.5rem;
     padding-bottom: 3rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 /* Judul halaman — warna mengikuti tema (terang/gelap) agar selalu terbaca */
@@ -412,12 +414,7 @@ elif menu == "🧮 Prediksi Tidur":
     with st.container():
         st.markdown("### 👤 Data Diri")
         nama = st.text_input("Nama Lengkap")
-        c1, c2 = st.columns(2)
-        with c1:
-            umur = st.number_input("Usia (tahun)", 1, 100, 30)
-        with c2:
-            st.markdown('<div style="height: 1.55rem;"></div>', unsafe_allow_html=True)
-            st.markdown('<span class="chip">SVM</span><span class="chip">Streamlit</span><span class="chip">JOINS SINTA 4</span>', unsafe_allow_html=True)
+        umur = st.number_input("Usia (tahun)", 1, 100, 30)
 
         st.markdown("### ⚖️ Fisik & BMI")
         c1, c2 = st.columns(2)
