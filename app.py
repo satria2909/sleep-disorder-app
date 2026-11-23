@@ -85,18 +85,6 @@ h1, h2, h3 {
     border-color: #2dd4bf !important;
 }
 
-/* Navbar desktop: teks label ditampilkan di samping ikon via ::after.
-   Label tombol di Python hanya ikon; teks ditambah di sini supaya di HP
-   tombol bisa tampil ikon saja. Blok nav dikenali dari 6 kolomnya. */
-@media (min-width: 641px) {
-    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(1) .stButton > button::after { content: " Beranda"; }
-    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(2) .stButton > button::after { content: " Prediksi Tidur"; }
-    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(3) .stButton > button::after { content: " Hasil Prediksi"; }
-    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(4) .stButton > button::after { content: " Riwayat Prediksi"; }
-    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(5) .stButton > button::after { content: " Tips Tidur Sehat"; }
-    [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6) .stButton > button::after { content: " Tentang"; }
-}
-
 /* Input membulat */
 .stTextInput input, .stNumberInput input {
     border-radius: 12px !important;
@@ -264,6 +252,10 @@ h1, h2, h3 {
     .card {
         padding: 1.1rem 1.2rem !important;
     }
+    /* Kartu statistik abu saat menumpuk di HP: beri jarak antar kartu */
+    .stat {
+        margin-bottom: 1rem !important;
+    }
     [data-testid="stHorizontalBlock"] {
         flex-direction: column !important;
     }
@@ -274,26 +266,31 @@ h1, h2, h3 {
     .stButton > button {
         width: 100% !important;
     }
-    /* Navbar HP: 6 tombol ikon saja (tanpa teks) dalam satu baris, bulat,
-       menggantikan 6 baris menumpuk. Blok nav dikenali dari 6 kolomnya. */
+    /* Logo & judul dipusatkan di HP */
+    [data-testid="stImage"], .brand-logo {
+        display: flex !important;
+        justify-content: center !important;
+    }
+    .brand-title {
+        text-align: center !important;
+    }
+    /* Navbar HP: grid 2 kolom x 3 baris, teks kembali tampil.
+       Blok nav dikenali dari 6 kolomnya. */
     [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) {
         flex-direction: row !important;
         flex-wrap: wrap !important;
         justify-content: center !important;
-        gap: 0.4rem !important;
+        gap: 0.5rem !important;
     }
     [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) > :is([data-testid="column"], [data-testid="stColumn"]) {
-        flex: 0 0 44px !important;
-        width: 44px !important;
-        min-width: 44px !important;
+        flex: 1 1 calc(50% - 0.25rem) !important;
+        width: calc(50% - 0.25rem) !important;
+        min-width: 0 !important;
     }
     [data-testid="stHorizontalBlock"]:has(> :is([data-testid="column"], [data-testid="stColumn"]):nth-child(6):last-child) .stButton > button {
-        width: 44px !important;
-        min-width: 44px !important;
-        height: 44px !important;
-        padding: 0 !important;
-        font-size: 1.25rem !important;
-        border-radius: 50% !important;
+        font-size: 0.8rem !important;
+        padding: 0.5rem 0.4rem !important;
+        white-space: nowrap !important;
     }
 }
 </style>
@@ -380,11 +377,11 @@ with h_kiri:
         if os.path.exists("sleep.png"):
             st.image("sleep.png", width=64)
         else:
-            st.markdown('<div style="font-size: 2.8rem;">😴</div>', unsafe_allow_html=True)
+            st.markdown('<div class="brand-logo" style="font-size: 2.8rem;">😴</div>', unsafe_allow_html=True)
     with _lg2:
         st.markdown(
             """
-            <div style="padding-top: 0.3rem;">
+            <div class="brand-title" style="padding-top: 0.3rem;">
                 <div style="font-size: 1.55rem; font-weight: 800; color: #14b8a6; line-height: 1.1;">Deteksi Tidur</div>
                 <div style="font-size: 0.9rem; color: #94a3b8;">SVM &bull; Streamlit</div>
             </div>
@@ -396,12 +393,9 @@ with h_kanan:
     st.markdown('<div style="height: 1rem;"></div>', unsafe_allow_html=True)
     _nav = st.columns(len(MENU_ITEMS))
     for _i, _item in enumerate(MENU_ITEMS):
-        # Label tombol cukup ikonnya saja; teks label ditampilkan di desktop
-        # via CSS ::after, dan di HP tombol tampil ikon saja (tanpa teks).
-        _ikon = _item.split(" ", 1)[0]
         with _nav[_i]:
             if st.button(
-                _ikon,
+                _item,
                 key=f"nav_{_i}",
                 type="primary" if st.session_state.menu == _item else "secondary",
                 use_container_width=True,
