@@ -64,20 +64,20 @@ h1, h2, h3 {
     box-shadow: 0 12px 26px rgba(13, 148, 136, 0.45);
 }
 
-/* Tombol secondary (nav tidak aktif): putih, border teal muda */
+/* Tombol secondary (nav tidak aktif): gradasi abu — terang di mode terang,
+   gelap di mode gelap (mengikuti variabel tema Streamlit) */
 .stButton > button[kind="secondary"] {
-    background: #ffffff !important;
-    color: #0f766e !important;
+    background: linear-gradient(135deg, var(--secondary-background-color, #dbe2ea), var(--background-color, #f4f7fa)) !important;
+    color: var(--text-color, #0f766e) !important;
     border: 1.5px solid #99f6e4 !important;
     border-radius: 999px !important;
     padding: 0.65rem 0.6rem !important;
     font-weight: 700 !important;
     font-size: 0.9rem !important;
     box-shadow: none !important;
-    transition: background 0.15s ease;
+    transition: border-color 0.15s ease;
 }
 .stButton > button[kind="secondary"]:hover {
-    background: #f0fdfa !important;
     border-color: #0d9488 !important;
 }
 
@@ -89,9 +89,9 @@ h1, h2, h3 {
     border-radius: 12px !important;
 }
 
-/* Kartu putih */
+/* Kartu: gradasi abu — terang di mode terang, gelap di mode gelap */
 .card {
-    background: #ffffff;
+    background: linear-gradient(135deg, var(--secondary-background-color, #dbe2ea), var(--background-color, #f4f7fa));
     border: 1px solid #ccfbf1;
     border-radius: 20px;
     padding: 1.4rem 1.6rem;
@@ -129,9 +129,9 @@ h1, h2, h3 {
     margin: 0;
 }
 
-/* Kartu statistik kecil */
+/* Kartu statistik kecil: gradasi abu */
 .stat {
-    background: #ffffff;
+    background: linear-gradient(135deg, var(--secondary-background-color, #dbe2ea), var(--background-color, #f4f7fa));
     border: 1px solid #ccfbf1;
     border-radius: 18px;
     padding: 1.1rem 1.2rem;
@@ -141,13 +141,12 @@ h1, h2, h3 {
 .stat .num {
     font-size: 1.7rem;
     font-weight: 800;
-    color: #0d9488;
+    color: #14b8a6;
     line-height: 1.1;
 }
 .stat .lbl {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #475569;
     margin-top: 0.25rem;
 }
 
@@ -301,8 +300,8 @@ with _logo2:
     st.markdown(
         """
         <div style="padding-top: 0.3rem;">
-            <div style="font-size: 1.35rem; font-weight: 800; color: #0f766e; line-height: 1.1;">Deteksi Tidur</div>
-            <div style="font-size: 0.85rem; color: #64748b;">SVM &bull; Streamlit</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: #14b8a6; line-height: 1.1;">Deteksi Tidur</div>
+            <div style="font-size: 0.85rem; color: var(--text-color, #64748b); opacity: 0.75;">SVM &bull; Streamlit</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -522,7 +521,7 @@ elif menu == "💤 Tips Tidur Sehat":
             st.markdown(
                 f'<div class="card"><div style="font-size: 1.6rem;">{ikon}</div>'
                 f'<h3 style="margin: 0.3rem 0;">{judul}</h3>'
-                f'<p style="color: #475569; line-height: 1.6; margin: 0;">{isi}</p></div>',
+                f'<p style="color: var(--text-color, #475569); line-height: 1.6; margin: 0;">{isi}</p></div>',
                 unsafe_allow_html=True,
             )
 
