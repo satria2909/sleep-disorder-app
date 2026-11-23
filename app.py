@@ -39,7 +39,7 @@ html, body, [class*="css"] {
 /* Batasi lebar konten agar rapi */
 .block-container {
     max-width: 1080px;
-    padding-top: 2rem;
+    padding-top: 4.5rem;
     padding-bottom: 3rem;
 }
 
@@ -354,6 +354,7 @@ if menu == "🏠 Beranda":
     with s3:
         st.markdown('<div class="stat"><div class="num">3 Kelas</div><div class="lbl">Normal &bull; Insomnia &bull; Sleep Apnea</div></div>', unsafe_allow_html=True)
 
+    st.markdown('<div style="height: 1.4rem;"></div>', unsafe_allow_html=True)
     if st.button("🔮 Mulai Prediksi Sekarang", type="primary"):
         st.session_state["menu"] = "🧮 Prediksi Tidur"
         st.rerun()
