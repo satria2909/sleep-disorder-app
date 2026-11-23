@@ -64,13 +64,14 @@ h1, h2, h3 {
     box-shadow: 0 12px 26px rgba(13, 148, 136, 0.45);
 }
 
-/* Tombol secondary (nav tidak aktif): gradasi abu terang.
-   Mode gelap di-override di @media di bawah (variabel tema Streamlit
-   ternyata tidak terbaca di setup ini, jadi pakai warna eksplisit). */
+/* Tombol secondary (nav tidak aktif): gradasi abu gelap + teks terang.
+   Satu gaya tetap untuk mode terang & gelap — deteksi tema via media query
+   ternyata tidak sinkron dengan tema Streamlit (OS gelap + Streamlit terang
+   bikin teks tidak terbaca), jadi warna latar & teks dipatok eksplisit. */
 .stButton > button[kind="secondary"] {
-    background: linear-gradient(135deg, #dbe2ea, #f4f7fa) !important;
-    color: #0f766e !important;
-    border: 1.5px solid #99f6e4 !important;
+    background: linear-gradient(135deg, #0f172a, #475569) !important;
+    color: #e2e8f0 !important;
+    border: 1.5px solid #475569 !important;
     border-radius: 999px !important;
     padding: 0.65rem 0.6rem !important;
     font-weight: 700 !important;
@@ -79,7 +80,7 @@ h1, h2, h3 {
     transition: border-color 0.15s ease;
 }
 .stButton > button[kind="secondary"]:hover {
-    border-color: #0d9488 !important;
+    border-color: #2dd4bf !important;
 }
 
 /* Input membulat */
@@ -90,14 +91,20 @@ h1, h2, h3 {
     border-radius: 12px !important;
 }
 
-/* Kartu: gradasi abu terang */
+/* Kartu: gradasi abu gelap + teks terang (satu gaya, mode terang & gelap) */
 .card {
-    background: linear-gradient(135deg, #dbe2ea, #f4f7fa);
-    border: 1px solid #ccfbf1;
+    background: linear-gradient(135deg, #0f172a, #475569);
+    border: 1px solid #475569;
     border-radius: 20px;
     padding: 1.4rem 1.6rem;
-    box-shadow: 0 10px 30px rgba(13, 148, 136, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     margin-bottom: 1.1rem;
+}
+.card h3 {
+    color: #f1f5f9 !important;
+}
+.card p {
+    color: #e2e8f0 !important;
 }
 
 /* Hero beranda */
@@ -130,24 +137,25 @@ h1, h2, h3 {
     margin: 0;
 }
 
-/* Kartu statistik kecil: gradasi abu terang */
+/* Kartu statistik kecil: gradasi abu gelap + teks terang */
 .stat {
-    background: linear-gradient(135deg, #dbe2ea, #f4f7fa);
-    border: 1px solid #ccfbf1;
+    background: linear-gradient(135deg, #0f172a, #475569);
+    border: 1px solid #475569;
     border-radius: 18px;
     padding: 1.1rem 1.2rem;
     text-align: center;
-    box-shadow: 0 8px 24px rgba(13, 148, 136, 0.07);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 .stat .num {
     font-size: 1.7rem;
     font-weight: 800;
-    color: #14b8a6;
+    color: #2dd4bf;
     line-height: 1.1;
 }
 .stat .lbl {
     font-size: 0.85rem;
     font-weight: 600;
+    color: #cbd5e1;
     margin-top: 0.25rem;
 }
 
@@ -216,25 +224,41 @@ h1, h2, h3 {
     margin-bottom: 0.4rem;
 }
 
-/* Mode gelap: tombol & kartu jadi gradasi abu GELAP + teks terang */
-@media (prefers-color-scheme: dark) {
-    .stButton > button[kind="secondary"] {
-        background: linear-gradient(135deg, #1e293b, #334155) !important;
-        color: #e2e8f0 !important;
-        border-color: #475569 !important;
+/* Responsif — layar HP (<=640px): kolom menumpuk vertikal,
+   teks hero & hasil mengecil, padding konten lebih rapat */
+@media (max-width: 640px) {
+    .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 3.5rem !important;
     }
-    .stButton > button[kind="secondary"]:hover {
-        border-color: #2dd4bf !important;
+    .hero {
+        padding: 1.4rem 1.2rem !important;
     }
-    .card, .stat {
-        background: linear-gradient(135deg, #1e293b, #334155);
-        border-color: #475569;
+    .hero h1 {
+        font-size: 1.7rem !important;
     }
-    .stat .num {
-        color: #2dd4bf;
+    .hero p {
+        font-size: 0.95rem !important;
     }
-    .card p {
-        color: #e2e8f0 !important;
+    .result .r-value {
+        font-size: 1.6rem !important;
+    }
+    .result {
+        padding: 1.2rem 1.2rem !important;
+    }
+    .card {
+        padding: 1.1rem 1.2rem !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    [data-testid="column"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+    .stButton > button {
+        width: 100% !important;
     }
 }
 </style>
