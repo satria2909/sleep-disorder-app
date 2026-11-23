@@ -35,9 +35,9 @@ html, body, [class*="css"] {
    Jangan paksa latar terang di sini — kalau dipaksa, widget & label mode gelap
    jadi tidak terbaca. */
 
-/* Konten full lebar (kiri-kanan) tanpa ruang kosong di sisi */
+/* Konten 80% lebar layar (tengah) */
 .block-container {
-    max-width: 100%;
+    max-width: 80%;
     padding-top: 4.5rem;
     padding-bottom: 3rem;
     padding-left: 2rem;
